@@ -1,0 +1,3 @@
+#!/bin/sh
+/bin/run-parts -a stop /etc/rc3.d
+killall -u root

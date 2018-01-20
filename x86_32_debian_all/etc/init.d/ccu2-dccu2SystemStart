@@ -1,0 +1,117 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:
+# RequiredStart: $remote_fs $syslog
+# Required-Stop: $remote_fs $syslog
+# Default-Start:
+# Default-Stop: 0 1 6
+# Short-Description: start script
+# Description: sets some environment options
+### END INIT INFO
+
+CFG_TEMPLATE_DIR=/etc/config_templates
+
+DESC="basic system"
+NAME="CCU2 docker"
+. /lib/lsb/init-functions
+
+# function to check if a backup should be restored that had been placed in /usr/local/tmp
+# in addition to /usr/local/.doBackupRestore being present and empty
+checkUSBLockFile() {
+
+	log_progress_msg ", checking USB Lock-File"
+
+  # only continue if .doBackupRestore file exists
+  if [ ! -f /var/lock/LCK..ttyUSB0 ]; then
+		log_progress_msg ", Lock-File not present"
+  else
+  	rm -rf /var/lock/LCK..ttyUSB0
+  	log_progress_msg ", Lock-File was present, deleted it"
+  fi
+}
+
+checkCuxdPresent() {
+
+	log_progress_msg ", checking if cuxd is present and no /etc/init.d/S55cuxd"
+
+  # only continue if cuxd is present and link not to remove mount warning if link is created from /usr/local/etc/config/rc.d/cuxdaemon script
+  if [ ! -f /usr/local/etc/config/rc.d/cuxdaemon ]; then
+		log_progress_msg ", cuxd not present"
+  else
+	  if [ ! -f /etc/init.d/S55cuxd ]; then
+  		ln -s /usr/local/etc/config/rc.d/cuxdaemon /etc/init.d/S55cuxd
+	  	log_progress_msg ", cuxd present, link /etc/init.d/S55cuxd was not, created it"
+	  fi
+  fi
+}
+
+checkBackupRestore() {
+
+	log_progress_msg ", checking if restore necessary"
+
+  # only continue if .doBackupRestore file exists
+  if [ ! -r /usr/local/.doBackupRestore ]; then
+		log_progress_msg ", no restore necessary"
+    return
+  else
+  	log_progress_msg ", backupRestore necessary"
+  fi
+
+  if [ -f /usr/local/tmp/usr_local.tar.gz ]; then
+   	log_progress_msg ", restore necessary, preparing"
+   # now remove the whole /usr/local, but keep /usr/local/tmp
+    find /usr/local -mindepth 1 -maxdepth 1 -not -name tmp -not -name "lost+found" -exec rm -rf {} \;
+
+    # unarchive the backup archive to restore everything
+   	log_progress_msg ", now unarchive"
+    tar -C / -xf /usr/local/tmp/usr_local.tar.gz
+
+    # make sure everything is written to disk
+   	log_progress_msg ", now sync"
+    sync
+  else
+  	log_progress_msg ", no backup found"
+  fi
+
+  rm -f /usr/local/.doBackupRestore
+}
+
+init() {
+  # check if we should restore a backup now
+  checkBackupRestore
+  #check if there is an unremoved usb lock file
+  checkUSBLockFile
+	checkCuxdPresent
+}
+
+start() {
+	log_daemon_msg "Starting ${DESC}" "${NAME}"
+	init
+	log_end_msg 0
+}
+
+stop () {
+	/bin/install_addon
+}
+
+restart() {
+	start
+}
+
+case "$1" in
+  start)
+	start
+	;;
+  stop)
+	stop
+	;;
+  restart|reload)
+	restart
+	;;
+  *)
+	echo "Usage: $0 {start|stop|restart}"
+	exit 1
+esac
+
+exit $?
+

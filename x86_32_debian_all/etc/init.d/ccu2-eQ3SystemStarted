@@ -1,0 +1,81 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides: Third-Party Addons
+# RequiredStart: $remote_fs $syslog
+# Required-Stop: $remote_fs $syslog
+# Default-Start:
+# Default-Stop: 0 1 6
+# Short-Description: Starts Third-Party Addons.
+# Description: Starts Third-Party Addons.
+### END INIT INFO
+
+CFG_TEMPLATE_DIR=/etc/config_templates
+DESC="Third-Party Addons"
+NAME="Third-Party Addons"
+
+. /lib/lsb/init-functions
+
+start() {
+	log_daemon_msg "Starting ${DESC}" "${NAME}"
+	if [ ! -e /etc/config/safemode ]; then
+
+		# CloudMatic (meine-homematic.de) startup
+		if [ -x /opt/mh/startup.sh ]; then
+			/opt/mh/startup.sh 2>/dev/null >/dev/null
+		fi
+
+		# source /etc/profile.d profiles
+		for i in /etc/profile.d/*.sh ; do
+			if [ -r "$i" ]; then
+				. $i
+			fi
+			unset i
+		done
+
+		# source /usr/local/etc/profile.d profiles
+		if [ -d /usr/local/etc/profile.d ]; then
+			for i in /usr/local/etc/profile.d/*.sh ; do
+				if [[ -r "$i" ]]; then
+					. $i
+				fi
+				unset i
+			done
+		fi
+
+		# Zusatzsoftware starten
+		/bin/run-parts -a start /etc/config/rc.d
+		# cal local rc file
+		if [ -x /usr/local/etc/rc.local ]; then
+			/usr/local/etc/rc.local
+		fi
+	else
+		rm -f /etc/config/safemode
+	fi
+	log_end_msg 0
+}
+
+restart() {
+	start
+}
+
+stop() {
+	/bin/run-parts -a stop /etc/config/rc.d
+}
+
+case "$1" in
+  start)
+	start
+	;;
+  stop)
+	stop
+	;;
+  restart|reload)
+	restart
+	;;
+  *)
+	echo "Usage: $0 {start|stop|restart}"
+	exit 1
+esac
+
+exit $?
+

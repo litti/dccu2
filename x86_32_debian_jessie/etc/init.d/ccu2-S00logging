@@ -1,0 +1,56 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides: syslog klogd
+# RequiredStart: $remote_fs $syslog
+# Required-Stop: $remote_fs $syslog
+# Default-Start:
+# Default-Stop: 0 1 6
+# Short-Description: start logging
+# Description: start logging
+### END INIT INFO
+
+DESC="logging system"
+NAME="syslogd"
+. /lib/lsb/init-functions
+
+if [ -f /etc/config/syslog ]; then
+    . /etc/config/syslog
+fi
+
+SYSLOG_OPTIONS="-m 0"
+
+if [ _$LOGHOST != _ ]; then
+    SYSLOG_OPTIONS="$SYSLOG_OPTIONS -R $LOGHOST -L"
+fi
+
+start() {
+	log_daemon_msg "Starting ${DESC}" "${NAME}"
+	start-stop-daemon -S -q -p /var/run/syslog.pid --exec /sbin/syslogd -- $SYSLOG_OPTIONS
+	start-stop-daemon -S -q -p /var/run/klogd.pid --exec /sbin/klogd
+	log_end_msg 0
+}
+
+stop() {
+	log_daemon_msg "Stopping ${DESC}" "${NAME}"
+	start-stop-daemon -K -q -p /var/run/syslog.pid
+	start-stop-daemon -K -q -p /var/run/klogd.pid
+	log_end_msg 0
+}
+
+case "$1" in
+  start)
+  start
+	;;
+  stop)
+  stop
+	;;
+  restart|reload)
+  stop
+  start
+	;;
+  *)
+	echo "Usage: $0 {start|stop|restart}"
+	exit 1
+esac
+
+exit $?

@@ -1,0 +1,67 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides: hs485dloader
+# RequiredStart: $remote_fs $syslog
+# Required-Stop: $remote_fs $syslog
+# Default-Start:
+# Default-Stop: 0 1 6
+# Short-Description: Prepares start of hs485d
+# Description: Writes /etc/config/InterfacesList.xml It must be started before webserver! It does NOT start hs485d itself!
+### END INIT INFO
+
+LOGLEVEL_HS485D=5
+
+CFG_TEMPLATE_DIR=/etc/config_templates
+
+NAME="hs485d"
+. /lib/lsb/init-functions
+
+init() {
+	export TZ=`cat /etc/config/TZ`
+
+	if [ ! -d /etc/config/hs485d ] ; then
+  		mkdir /etc/config/hs485d
+	fi
+	if [ -e /etc/config/syslog ] ; then
+  		. /etc/config/syslog
+	fi
+	if [ ! -e /etc/config/InterfacesList.xml ] ; then
+		cp $CFG_TEMPLATE_DIR/InterfacesList.xml /etc/config/
+	else
+		cmp -s $CFG_TEMPLATE_DIR/InterfacesList.xml /etc/config/InterfacesList.xml || cp $CFG_TEMPLATE_DIR/InterfacesList.xml /etc/config/
+	fi
+}
+
+start() {
+	log_daemon_msg "Preparing start" "${NAME}"
+	init
+	/bin/hs485dLoader -l $LOGLEVEL_HS485D -ds -dd /etc/config/hs485d.conf
+	log_end_msg 0
+}
+
+stop() {
+	log_end_msg 0
+}
+
+restart() {
+	stop
+	start
+}
+
+case "$1" in
+  start)
+	start
+	;;
+  stop)
+	stop
+	;;
+  restart|reload)
+	restart
+	;;
+  *)
+	echo "Usage: $0 {start|stop|restart}"
+	exit 1
+esac
+
+exit $?
+
