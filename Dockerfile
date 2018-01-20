@@ -1,37 +1,49 @@
-FROM debian:jessie
-
-ARG DEBIAN_FRONTEND=noninteractive
+FROM litti/debian-stretch-for-ccu2:latest
 
 ADD bin /bin
+ADD boot /boot
 ADD etc /etc
 ADD firmware /firmware
 ADD lib /lib
 ADD opt /opt
+ADD sbin /sbin
 ADD usr /usr
 ADD www /www
 
-RUN rm -rf /usr/local/*
-RUN mkdir -p /usr/local/etc/config
-RUN mkdir -p /usr/local/etc/config/rc.d
-RUN mkdir -p /usr/local/etc/config/addons/www
-RUN mkdir -p /var/status
-RUN ln -s ../usr/local/etc/config /etc/config
-RUN dpkg --add-architecture i386
-RUN apt-get update
-RUN apt-get install -y --no-install-recommends apt-utils
-RUN apt-get install -y bootlogd busybox-syslogd curl file kmod net-tools openssh-server openssl patch psmisc rsync software-properties-common usbutils vim wget
-RUN apt-get install -y libc6:i386 libncurses5:i386 libssl-dev:i386 libstdc++6:i386 libusb-1.0:i386
-RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 0x219BD9C9
-RUN apt-add-repository 'deb http://repos.azulsystems.com/debian stable main'
-RUN apt-get update
-RUN apt-get install -y zulu-8
-RUN mkdir /opt/hm
-RUN touch /var/rf_address
-RUN ln -s /www /opt/hm/www
-RUN ln -s /bin /opt/hm/bin
 RUN update-usbids
-RUN echo "root:MuZhlo9n%8!G"|chpasswd
-RUN sed -i -e 's/^PermitRootLogin without-password/PermitRootLogin yes/g' /etc/ssh/sshd_config
+RUN rm -rf /usr/local/* && \
+      mkdir -p /usr/local/tmp && \
+      mkdir -p /usr/local/etc/config && \
+      mkdir -p /usr/local/etc/config/crRFD && \
+      mkdir -p /usr/local/etc/config/rc.d && \
+      mkdir -p /usr/local/etc/config/addons/www && \
+      mkdir -p /var/status && \
+      ln -s ../usr/local/etc/config /etc/config && \
+      ln -s /usr/lib/i386-linux-gnu/libssl.so /usr/lib/libssl.so.1.0.0 && \
+      ln -s /usr/lib/i386-linux-gnu/libcrypto.so /usr/lib/libcrypto.so.1.0.0 && \
+      mkdir /opt/hm && \
+      touch /var/rf_address && \
+      ln -s /bin /opt/hm/bin && \
+      ln -s /etc /opt/hm/etc && \
+      ln -s /www /opt/hm/www && \
+      ln -s ../init.d/ccu2-logging /etc/rc3.d/S00ccu2-logging && \
+      ln -s ../init.d/ccu2-dccu2SystemStart /etc/rc3.d/S01ccu2-dccu2SystemStart && \
+      ln -s ../init.d/ccu2-eQ3SystemStart /etc/rc3.d/S02ccu2-eQ3SystemStart && \
+      ln -s ../init.d/ccu2-hs485dloader /etc/rc3.d/S49ccu2-hs485dloader && \
+      ln -s ../init.d/ccu2-eq3configd /etc/rc3.d/S50ccu2-eq3configd && \
+      ln -s ../init.d/ccu2-lighttpd /etc/rc3.d/S50ccu2-lighttpd && \
+      ln -s ../init.d/ccu2-LGWFirmwareUpdate /etc/rc3.d/S58ccu2-LGWFirmwareUpdate && \
+      ln -s ../init.d/ccu2-SetLGWKey /etc/rc3.d/S59ccu2-SetLGWKey && \
+      ln -s ../init.d/ccu2-hs485d /etc/rc3.d/S60ccu2-hs485d && \
+      ln -s ../init.d/ccu2-rfd /etc/rc3.d/S61ccu2-rfd && \
+      ln -s ../init.d/ccu2-HMServer /etc/rc3.d/S62ccu2-HMServer && \
+      ln -s ../init.d/ccu2-ReGaHss /etc/rc3.d/S70ccu2-ReGaHss && \
+      ln -s ../init.d/ccu2-eQ3SystemStarted /etc/rc3.d/S99ccu2-eQ3SystemStarted && \
+      echo 'root:root'|chpasswd
+
+#openssh
+#sed -i -e 's/^PermitRootLogin without-password/PermitRootLogin yes/g' /etc/ssh/sshd_config && \
+#if grep -Fxq "PermitRootLogin" /etc/ssh/sshd_config; then echo ""; else echo "\nPermitRootLogin yes" >>/etc/ssh/sshd_config; fi
 
 ADD entrypoint.sh /
 
@@ -43,11 +55,12 @@ EXPOSE 22
 EXPOSE 80
 #minissdpd
 EXPOSE 1900
+#regahss
 EXPOSE 1999
+#hs485d
+EXPOSE 2000
 #rfd
 EXPOSE 2001
-#hs485d
-EXPOSE 2002
 #hmiprf 
 EXPOSE 2010
 #rega
