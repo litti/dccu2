@@ -36,14 +36,13 @@ RUN rm -rf /usr/local/* && \
       ln -s ../init.d/ccu2-SetLGWKey /etc/rc3.d/S59ccu2-SetLGWKey && \
       ln -s ../init.d/ccu2-hs485d /etc/rc3.d/S60ccu2-hs485d && \
       ln -s ../init.d/ccu2-rfd /etc/rc3.d/S61ccu2-rfd && \
-      ln -s ../init.d/ccu2-HMServer /etc/rc3.d/S62ccu2-HMServer && \
+      ln -s ../init.d/ccu2-HmIPServer /etc/rc3.d/S62ccu2-HmIPServer && \
       ln -s ../init.d/ccu2-ReGaHss /etc/rc3.d/S70ccu2-ReGaHss && \
       ln -s ../init.d/ccu2-eQ3SystemStarted /etc/rc3.d/S99ccu2-eQ3SystemStarted && \
-      echo 'root:root'|chpasswd
+      echo 'root:root'|chpasswd && \
+      sed -i -e 's/^PermitRootLogin without-password/PermitRootLogin yes/g' /etc/ssh/sshd_config && \
+      if grep -Fxq "PermitRootLogin" /etc/ssh/sshd_config; then echo ""; else echo "\nPermitRootLogin yes" >>/etc/ssh/sshd_config; fi
 
-#openssh
-#sed -i -e 's/^PermitRootLogin without-password/PermitRootLogin yes/g' /etc/ssh/sshd_config && \
-#if grep -Fxq "PermitRootLogin" /etc/ssh/sshd_config; then echo ""; else echo "\nPermitRootLogin yes" >>/etc/ssh/sshd_config; fi
 
 ADD entrypoint.sh /
 

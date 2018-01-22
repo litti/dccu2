@@ -1,19 +1,20 @@
 #!/bin/sh
 
-if [ ! -f /var/new_addon.tar.gz ]; then
+if [ ! -f /usr/local/tmp/new_addon.tar.gz ]; then
   exit
 fi
 
-mkdir -p /var/tmp/addon_install/
-tar -xzf /var/new_addon.tar.gz -C /var/tmp/addon_install/
+mkdir -p /usr/local/tmp/addon_install/
+tar -xzf /usr/local/tmp/new_addon.tar.gz -C /usr/local/tmp/addon_install/
 
-if [ ! -f /var/tmp/addon_install/update_script ] ; then
+if [ ! -f /usr/local/tmp/addon_install/update_script ] ; then
 	echo "no updatescript found, exiting"
 	exit
 fi
 
-chmod +x /var/tmp/addon_install/update_script
-exec /var/tmp/addon_install/update_script HM-DOCKER-AMD64
+chmod +x /usr/local/tmp/addon_install/update_script
+cd /usr/local/tmp/addon_install
+exec /usr/local/tmp/addon_install/update_script HM-DOCKER-X86-64
 
-rm -rf /var/tmp/addon_install
-rm -rf /var/new_addon.tar.gz
+rm -rf /usr/local/tmp/addon_install
+rm -rf /usr/local/new_addon.tar.gz

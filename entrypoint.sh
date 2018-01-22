@@ -13,7 +13,7 @@ finish () {
 }
 
 echo "Now running CCU2 from docker :-)"
-ip addr show|grep inet|grep global|awk '{print "Meine IP-Adresse ist: " $2}'
+ip addr show|grep inet|grep global|awk '{print "My IP address is: " $2}'|cut -d '/' -f 1
 
 trap finish TERM
 

@@ -19,28 +19,32 @@ NAME="CCU2 docker"
 # in addition to /usr/local/.doBackupRestore being present and empty
 checkUSBLockFile() {
 
-	log_progress_msg ", checking USB Lock-File"
+  if [ -f /etc/config/showStartupMessages ]; then
+		log_progress_msg ", checking USB Lock-File"
+	fi
 
-  # only continue if .doBackupRestore file exists
-  if [ ! -f /var/lock/LCK..ttyUSB0 ]; then
-		log_progress_msg ", Lock-File not present"
-  else
+  # only continue if lock file exists
+  if [ -f /var/lock/LCK..ttyUSB0 ]; then
   	rm -rf /var/lock/LCK..ttyUSB0
-  	log_progress_msg ", Lock-File was present, deleted it"
+	  if [ -f /etc/config/showStartupMessages ]; then
+  		log_progress_msg ", Lock-File was present, deleted it"
+  	fi
   fi
 }
 
 checkCuxdPresent() {
 
-	log_progress_msg ", checking if cuxd is present and no /etc/init.d/S55cuxd"
+	if [ -f /etc/config/showStartupMessages ]; then
+	  log_progress_msg ", checking if cuxd is present and no /etc/init.d/S55cuxd"
+	fi
 
   # only continue if cuxd is present and link not to remove mount warning if link is created from /usr/local/etc/config/rc.d/cuxdaemon script
-  if [ ! -f /usr/local/etc/config/rc.d/cuxdaemon ]; then
-		log_progress_msg ", cuxd not present"
-  else
+  if [ -f /usr/local/etc/config/rc.d/cuxdaemon ]; then
 	  if [ ! -f /etc/init.d/S55cuxd ]; then
   		ln -s /usr/local/etc/config/rc.d/cuxdaemon /etc/init.d/S55cuxd
-	  	log_progress_msg ", cuxd present, link /etc/init.d/S55cuxd was not, created it"
+		  if [ -f /etc/config/showStartupMessages ]; then
+		  	log_progress_msg ", cuxd present, link /etc/init.d/S55cuxd was not, created it"
+		 	fi
 	  fi
   fi
 }
@@ -58,7 +62,7 @@ checkBackupRestore() {
   fi
 
   if [ -f /usr/local/tmp/usr_local.tar.gz ]; then
-   	log_progress_msg ", restore necessary, preparing"
+   	log_progress_msg ", preparing"
    # now remove the whole /usr/local, but keep /usr/local/tmp
     find /usr/local -mindepth 1 -maxdepth 1 -not -name tmp -not -name "lost+found" -exec rm -rf {} \;
 
