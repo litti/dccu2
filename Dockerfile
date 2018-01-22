@@ -32,7 +32,7 @@ RUN rm -rf /usr/local/* && \
       ln -s ../init.d/ccu2-hs485dloader /etc/rc3.d/S49ccu2-hs485dloader && \
       ln -s ../init.d/ccu2-eq3configd /etc/rc3.d/S50ccu2-eq3configd && \
       ln -s ../init.d/ccu2-lighttpd /etc/rc3.d/S50ccu2-lighttpd && \
-      ln -s ../init.d/ccu2-LGWFirmwareUpdate /etc/rc3.d/S58ccu2-LGWFirmwareUpdate && \
+      ln -s ../init.d/ccu2-FirmwareUpdate /etc/rc3.d/S58ccu2-FirmwareUpdate && \
       ln -s ../init.d/ccu2-SetLGWKey /etc/rc3.d/S59ccu2-SetLGWKey && \
       ln -s ../init.d/ccu2-hs485d /etc/rc3.d/S60ccu2-hs485d && \
       ln -s ../init.d/ccu2-rfd /etc/rc3.d/S61ccu2-rfd && \

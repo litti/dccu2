@@ -69,7 +69,7 @@ cp -rlf $RDIR/dependencies/occu/X86_32_Debian_Wheezy/packages-eQ-3/RFD/lib/* $DO
 # HMIPServer
 echo "building HMIPServer"
 cp -rl $RDIR/dependencies/occu/HMserver/* $DOCKER_BUILD/
-rm -rf $DOCKER_BUILD/opt/HMServer/HMServer.jar
+#rm -rf $DOCKER_BUILD/opt/HMServer/HMServer.jar
 
 # Tante rega ;-)
 echo "building ReGaHss ;-)"
@@ -99,7 +99,7 @@ cp -rlf $RDIR/x86_32_debian_all/patches/WebUI/www/config/* $DOCKER_BUILD/www/con
 
 #hack for glitch in repo
 echo "hack for glitch in repo"
-mv $DOCKER_BUILD/firmware/HmIP-RFUSB/hmip_coprocessor_update.eq3 $DOCKER_BUILD/firmware/HmIP-RFUSB/hmip_coprocessor_update-2.8.4.eq3
+mv $DOCKER_BUILD/firmware/HmIP-RFUSB/hmip_coprocessor_update.eq3 $DOCKER_BUILD/firmware/HmIP-RFUSB/hmip_coprocessor_update-2.8.6.eq3
 
 # other data
 echo "building other data"

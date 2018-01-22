@@ -17,71 +17,66 @@ NAME="CCU2 docker"
 
 init() {
   chmod 775 /var
-  if [ ! -d /var/log ] ; then
-    mkdir /var/log
-  fi
+	if [ ! -d /var/log ] ; then
+	  mkdir /var/log
+	fi
   chmod 775 /var/log
-  if [ ! -d /var/tmp ] ; then
-    mkdir /var/tmp
-  fi
+	if [ ! -d /var/tmp ] ; then
+	  mkdir /var/tmp
+	fi
   chmod 775 /var/tmp
-  if [ ! -d /var/rega ] ; then
-    mkdir /var/rega
-  fi
+	if [ ! -d /var/rega ] ; then
+	  mkdir /var/rega
+	fi
   chmod 775 /var/rega
-  if [ ! -d /var/run ] ; then
-    mkdir /var/run
-  fi
+	if [ ! -d /var/run ] ; then
+	  mkdir /var/run
+	fi
   chmod 775 /var/run
-  if [ ! -d /var/spool ] ; then
-    mkdir /var/spool
-  fi
+	if [ ! -d /var/spool ] ; then
+	  mkdir /var/spool
+	fi
   chmod 775 /var/spool
-  if [ ! -d /var/lock ] ; then
-    mkdir /var/lock
-  fi
+	if [ ! -d /var/lock ] ; then
+	  mkdir /var/lock
+	fi
   chmod 775 /var/lock
-  if [ ! -d /var/cache ] ; then
-    mkdir /var/cache
-  fi
+	if [ ! -d /var/cache ] ; then
+	  mkdir /var/cache
+	fi
   chmod 775 /var/cache
-  if [ ! -d /var/lib ] ; then
-    mkdir /var/lib
-  fi
+	if [ ! -d /var/lib ] ; then
+	  mkdir /var/lib
+	fi
   chmod 775 /var/lib
-  if [ ! -d /var/lib/misc ] ; then
-    mkdir /var/lib/misc
-  fi
+	if [ ! -d /var/lib/misc ] ; then
+	  mkdir /var/lib/misc
+	fi
   chmod 775 /var/lib/misc
-  if [ ! -d /var/empty ] ; then
-    mkdir /var/empty
-  fi
+	if [ ! -d /var/empty ] ; then
+	  mkdir /var/empty
+	fi
   chmod 600 /var/empty
-  if [ ! -d /var/etc ] ; then
-    mkdir /var/etc
-  fi
+	if [ ! -d /var/etc ] ; then
+	  mkdir /var/etc
+	fi
   chmod 775 /var/etc
 
   #modprobe fsl_usb2_udc.ko
-  
-  # Tunneling
+	
+	# Tunneling
     #modprobe tun
        
-  # USB
+	# USB
     #modprobe ehci-hcd
 
-  # HM/HmIP Dual Protocol
-  #modprobe mxs_raw_auart
-  #modprobe eq3_char_loop
-   
-  if [ ! -d /usr/local/etc/config ] ; then
+	# HM/HmIP Dual Protocol
+	#modprobe mxs_raw_auart
+	#modprobe eq3_char_loop
+	 
+	if [ ! -d /usr/local/etc/config ] ; then
     mkdir -p /usr/local/etc/config
-    chmod 775 /usr/local/etc/config
-  fi
-   
-  if [ ! -d /usr/local/tmp ] ; then
-    mkdir -p /usr/local/tmp
-    chmod 775 /usr/local/tmp
+  	chmod 775 /usr/local/etc/config
   fi
 
   if [ ! -e /etc/config/TZ ] ; then
@@ -93,9 +88,9 @@ init() {
 }
 
 start() {
-  log_daemon_msg "Starting ${DESC}" "${NAME}"
-  init
-  log_end_msg 0
+	log_daemon_msg "Starting ${DESC}" "${NAME}"
+	init
+	log_end_msg 0
 }
 
 stop () {
@@ -107,22 +102,22 @@ stop () {
 }
 
 restart() {
-  start
+	start
 }
 
 case "$1" in
   start)
-  start
-  ;;
+	start
+	;;
   stop)
-  stop
-  ;;
+	stop
+	;;
   restart|reload)
-  restart
-  ;;
+	restart
+	;;
   *)
-  echo "Usage: $0 {start|stop|restart}"
-  exit 1
+	echo "Usage: $0 {start|stop|restart}"
+	exit 1
 esac
 
 exit $?
