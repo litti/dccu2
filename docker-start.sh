@@ -34,12 +34,24 @@ set -e
 #Additional options for docker create service / docker run
 : ${DOCKER_OPTIONS:=""}
 
+#Device VENDOR ID
+: ${DEVICE_VENDOR:="1b1f"}
+
+#Device PRODUCT ID
+: ${DEVICE_PRODUCT:="c020"}
+
 ##############################################
 # No need to touch anything below this line  #
 ##############################################
 
 DOCKER_VOLUME_INTERNAL_PATH="/usr/local/"
 DOCKER_NAME=dccu2-x86_64
+
+source ./get_device.sh
+
+DEVICE_PATH=`getdevice ${DEVICE_VENDOR}:${DEVICE_PRODUCT}`
+
+: ${DEVICE_PATH:="ttyUSB0"}
 
 #######
 # RUN #
@@ -61,7 +73,7 @@ docker run --name $DOCKER_NAME \
   -p ${CCU2_VIRTDEV_PORT}:9292 \
   -e PERSISTENT_DIR=${DOCKER_VOLUME_INTERNAL_PATH} \
   -v ${DOCKER_CCU2_DATA}:${DOCKER_VOLUME_INTERNAL_PATH} \
-  --device=/dev/ttyUSB0 \
+  --device=/dev/${DEVICE_PATH} \
   --hostname $DOCKER_NAME \
   -d --restart=always \
   $DOCKER_OPTIONS \
